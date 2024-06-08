@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Click Counter with Timer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Orbitron', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #333; /* Koyu gri arka plan */
+            margin: 0;
+            overflow: hidden;
+        }
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            color: lime; /* Yazı rengini yeşil yaptık */
+        }
+        .blur-background {
+            filter: blur(5px);
+        }
+        .button-container {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        #clickButton {
+            width: 150px; /* Düğmeyi büyüttük */
+            height: 150px; /* Düğmeyi büyüttük */
+            background-color: black; /* Düğme rengini siyah yaptık */
+            color: lime; /* Yazı rengini yeşil yaptık */
+            font-size: 24px; /* Dijital görünüm için font boyutunu azalttık */
+            border: none;
+            border-radius: 50%; /* Düğme köşelerini tamamen yuvarlaklaştırdık */
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3); /* Düğmeye gölgelendirme ekledik */
+            transition: transform 0.3s ease; /* Geçiş efekti için */
+            outline: none; /* Düğmeye tıkladığında mavi kareyi engelledik */
+        }
+        #clickButton:active {
+            transform: scale(0.95); /* Tıklama efekti için düğmeyi küçült */
+        }
+        #clickButton span {
+            display: block;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            transition: transform 0.3s ease;
+        }
+        #clickButton:hover span {
+            transform: translate(-50%, -50%) scale(1.2); /* Hover durumunda yazıyı büyüt */
+        }
+        .counter, .timer {
+            font-size: 24px; /* Tıklama sayısı ve timer boyutunu daha da küçülttük */
+            margin: 10px;
+            background: black;
+            color: lime;
+            padding: 10px 20px;
+            border-radius: 10px;
+        }
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.6);
+            transform: scale(0);
+            animation: ripple-animation 0.6s linear;
+        }
+        @keyframes ripple-animation {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+        .popup-container {
+            display: none; /* Sayfa yüklendiğinde popup'ı gizle */
+            justify-content: center;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5); /* Yarı saydam siyah arkaplan */
+            z-index: 1000;
+        }
+        .popup {
+            background-color: white;
+            color: black;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            max-width: 80%;
+            position: relative;
+        }
+        .popup h2 {
+            margin-bottom: 10px;
+        }
+        .popup p {
+            margin-bottom: 20px;
+        }
+        .popup button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        @keyframes popup-animation {
+            from {
+                transform: scale(0);
+            }
+            to {
+                transform: scale(1);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-content">
+        <div class="button-container">
+            <button id="clickButton" style="outline: none;"><span>Click</span></button>
+        </div>
+        <div class="counter">Clicks: <span id="clickCount">0</span></div>
+        <div class="timer">Time left: <span id="timeLeft">10</span> seconds</div>
+    </div>
+    <div class="popup-container" id="popupContainer">
+        <div class="popup">
+            <h2>Time's up!</h2>
+            <p>You clicked <span id="clicksPerSecond">0</span> times per second.</p>
+            <p>Total clicks: <span id="finalCount">0</span></p>
+            <button id="closePopup">Close</button>
+        </div>
+    </div>
+
+    <!-- Ses dosyası -->
+    <audio id="clickSound">
+        <source src="click-sound.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+
+    <script>
+        let clickCount = 0;
+        let timeLeft = 10;
+        let timer;
+        let timerStarted = false;
+        let clicksPerSecond = 0; // Saniye başına tıklama sayısı
+        const clickButton = document.getElementById('clickButton');
+        const clickCountDisplay = document.getElementById('clickCount');
+        const timeLeftDisplay = document.getElementById('timeLeft');
+        const clicksPerSecondDisplay = document.getElementById('clicksPerSecond');
+        const popupContainer = document.getElementById('popupContainer');
+        const popup = document.querySelector('.popup');
+        const finalCount = document.getElementById('finalCount');
+        const closePopupButton = document.getElementById('closePopup');
+        const mainContent = document.querySelector('.main-content');
+        const clickSound = document.getElementById('clickSound');
+
+        clickButton.addEventListener('click', (e) => {
+            if (!timerStarted) {
+                startTimer();
+                timerStarted = true;
+            }
+            if (timeLeft <= 0) return; // Eğer zaman bittiyse, tıklamayı durdur.
+            clickCount++;
+            clickCountDisplay.textContent = clickCount;
+            calculateClicksPerSecond();
+            showRippleEffect(e);
+
+            // Ses çal
+            clickSound.play();
+        });
+
+        function startTimer() {
+            timer = setInterval(() => {
+                timeLeft--;
+                timeLeftDisplay.textContent = timeLeft;
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    showPopup();
+                }
+                calculateClicksPerSecond(); // Her saniye tıklama sayısını güncelle
+            }, 1000);
+        }
+
+        function calculateClicksPerSecond() {
+            clicksPerSecond = Math.round(clickCount / (10 - timeLeft)); // Saniye başına tıklama sayısını hesapla
+            clicksPerSecondDisplay.textContent = clicksPerSecond;
+        }
+
+        function showPopup() {
+            finalCount.textContent = clickCount;
+            popupContainer.style.display = 'flex'; // Popup container'ı görünür yap
+            mainContent.classList.add('blur-background');
+            clicksPerSecondDisplay.style.color = 'red'; // Saniye başına tıklama sayısının rengini değiştir
+        }
+
+        closePopupButton.addEventListener('click', () => {
+            popupContainer.style.display = 'none'; // Popup container'ı gizle
+            mainContent.classList.remove('blur-background');
+        });
+    </script>
+</body>
+</html>
+

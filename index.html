@@ -94,13 +94,27 @@
         .popup p {
             margin-bottom: 20px;
         }
-        .popup button {
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            padding: 10px 20px;
+        .popup .popup-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .popup .popup-header .close-button,
+        .popup .popup-header .refresh-button {
             cursor: pointer;
-            border-radius: 5px;
+            font-size: 18px;
+            background: none;
+            border: none;
+        }
+        .popup .popup-header .close-button::after {
+            content: '×';
+            font-size: 24px;
+            color: red;
+        }
+        .popup .popup-header .refresh-button::after {
+            content: '⟳';
+            font-size: 24px;
+            color: green;
         }
     </style>
 </head>
@@ -114,10 +128,13 @@
     </div>
     <div class="popup-container" id="popupContainer">
         <div class="popup">
+            <div class="popup-header">
+                <button class="close-button" id="closePopup"></button>
+                <button class="refresh-button" id="refreshPopup"></button>
+            </div>
             <h2>Time's up!</h2>
             <p>You clicked <span id="clicksPerSecond">0</span> times per second.</p>
             <p>Total clicks: <span id="finalCount">0</span></p>
-            <button id="closePopup">Close</button>
         </div>
     </div>
 
@@ -141,9 +158,9 @@
         const timeLeftDisplay = document.getElementById('timeLeft');
         const clicksPerSecondDisplay = document.getElementById('clicksPerSecond');
         const popupContainer = document.getElementById('popupContainer');
-        const popup = document.querySelector('.popup');
         const finalCount = document.getElementById('finalCount');
         const closePopupButton = document.getElementById('closePopup');
+        const refreshPopupButton = document.getElementById('refreshPopup');
         const mainContent = document.querySelector('.main-content');
         const clickSound = document.getElementById('clickSound');
 
@@ -187,6 +204,16 @@
         }
 
         closePopupButton.addEventListener('click', () => {
+            popupContainer.style.display = 'none'; // Popup container'ı gizle
+            mainContent.classList.remove('blur-background');
+        });
+
+        refreshPopupButton.addEventListener('click', () => {
+            clickCount = 0;
+            timeLeft = 10;
+            timerStarted = false;
+            clickCountDisplay.textContent = clickCount;
+            timeLeftDisplay.textContent = timeLeft;
             popupContainer.style.display = 'none'; // Popup container'ı gizle
             mainContent.classList.remove('blur-background');
         });

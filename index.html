@@ -33,7 +33,7 @@
         #clickButton {
             width: 250px; /* Büyük yapıldı */
             height: 250px; /* Büyük yapıldı */
-            background-color: black;
+            background-color: #bbb; /* Açık gri */
             color: lime;
             font-size: 24px;
             border: none;
@@ -94,6 +94,7 @@
             text-align: left; /* Sola hizalandı */
             max-width: 80%;
             position: relative;
+            animation: popupAnimation 0.5s ease-out;
         }
         .popup h2 {
             margin-bottom: 10px;
@@ -112,14 +113,44 @@
         }
         .popup .popup-header .refresh-button {
             cursor: pointer;
-            font-size: 24px; /* Büyütüldü */
+            font-size: 36px; /* Büyütüldü */
             background: none;
             border: none;
         }
         .popup .popup-header .refresh-button::after {
             content: '⟳';
-            font-size: 36px; /* Büyütüldü */
-            color: #158910; /* Hafif açık yeşil */
+            font-size: 48px; /* Büyütüldü */
+            color: #32CD32; /* Açık yeşil */
+            font-weight: bold; /* Kalın */
+        }
+        @keyframes popupAnimation {
+            0% {
+                transform: scale(0);
+            }
+            70% {
+                transform: scale(1.2);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+        .particle {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: white;
+            border-radius: 50%;
+            animation: particleAnimation 2s forwards;
+        }
+        @keyframes particleAnimation {
+            0% {
+                transform: translate(0, 0);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(var(--x), var(--y));
+                opacity: 0;
+            }
         }
     </style>
 </head>
@@ -204,6 +235,20 @@
             finalCount.textContent = clickCount;
             popupContainer.style.display = 'flex'; // Popup container'ı görünür yap
             mainContent.classList.add('blur-background');
+            createParticles();
+        }
+
+        function createParticles() {
+            for (let i = 0; i < 50; i++) { // 50 adet parça oluştur
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.setProperty('--x', `${Math.random() * 400 - 200}px`);
+                particle.style.setProperty('--y', `${Math.random() * 400 - 200}px`);
+                document.body.appendChild(particle);
+                setTimeout(() => {
+                    particle.remove();
+                }, 2000); // 2 saniye sonra parçayı kaldır
+            }
         }
 
         refreshPopupButton.addEventListener('click', () => {
@@ -218,3 +263,4 @@
     </script>
 </body>
 </html>
+

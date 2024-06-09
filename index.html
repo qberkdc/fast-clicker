@@ -12,7 +12,7 @@
             align-items: center;
             justify-content: center;
             height: 100vh;
-            background-color: #333; /* Koyu gri arka plan */
+            background-color: #333;
             margin: 0;
             overflow: hidden;
         }
@@ -21,7 +21,7 @@
             flex-direction: column;
             align-items: center;
             text-align: center;
-            color: lime; /* Yazı rengini yeşil yaptık */
+            color: lime;
         }
         .blur-background {
             filter: blur(5px);
@@ -31,22 +31,22 @@
             margin-bottom: 20px;
         }
         #clickButton {
-            width: 150px; /* Düğmeyi büyüttük */
-            height: 150px; /* Düğmeyi büyüttük */
-            background-color: black; /* Düğme rengini siyah yaptık */
-            color: lime; /* Yazı rengini yeşil yaptık */
-            font-size: 24px; /* Dijital görünüm için font boyutunu azalttık */
+            width: 150px;
+            height: 150px;
+            background-color: black;
+            color: lime;
+            font-size: 24px;
             border: none;
-            border-radius: 50%; /* Düğme köşelerini tamamen yuvarlaklaştırdık */
+            border-radius: 50%;
             cursor: pointer;
             position: relative;
             overflow: hidden;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3); /* Düğmeye gölgelendirme ekledik */
-            transition: transform 0.3s ease; /* Geçiş efekti için */
-            outline: none; /* Düğmeye tıkladığında mavi kareyi engelledik */
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease;
+            outline: none;
         }
         #clickButton:active {
-            transform: scale(0.95); /* Tıklama efekti için düğmeyi küçült */
+            transform: scale(0.95);
         }
         #clickButton span {
             display: block;
@@ -57,31 +57,18 @@
             transition: transform 0.3s ease;
         }
         #clickButton:hover span {
-            transform: translate(-50%, -50%) scale(1.2); /* Hover durumunda yazıyı büyüt */
+            transform: translate(-50%, -50%) scale(1.2);
         }
         .counter, .timer {
-            font-size: 24px; /* Tıklama sayısı ve timer boyutunu daha da küçülttük */
+            font-size: 24px;
             margin: 10px;
             background: black;
             color: lime;
             padding: 10px 20px;
             border-radius: 10px;
         }
-        .ripple {
-            position: absolute;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.6);
-            transform: scale(0);
-            animation: ripple-animation 0.6s linear;
-        }
-        @keyframes ripple-animation {
-            to {
-                transform: scale(4);
-                opacity: 0;
-            }
-        }
         .popup-container {
-            display: none; /* Sayfa yüklendiğinde popup'ı gizle */
+            display: none;
             justify-content: center;
             align-items: center;
             position: fixed;
@@ -89,7 +76,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background-color: rgba(0, 0, 0, 0.5); /* Yarı saydam siyah arkaplan */
+            background-color: rgba(0, 0, 0, 0.5);
             z-index: 1000;
         }
         .popup {
@@ -115,14 +102,6 @@
             cursor: pointer;
             border-radius: 5px;
         }
-        @keyframes popup-animation {
-            from {
-                transform: scale(0);
-            }
-            to {
-                transform: scale(1);
-            }
-        }
     </style>
 </head>
 <body>
@@ -144,7 +123,7 @@
 
     <!-- Ses dosyası -->
     <audio id="clickSound">
-        <source src="https://raw.githubusercontent.com/qberkdc/fast-clicker/public/sound/click.mp3" type="audio/mpeg">
+        <source src="click-sound.mp3" type="audio/mpeg">
         Your browser does not support the audio element.
     </audio>
 
@@ -154,6 +133,9 @@
         let timer;
         let timerStarted = false;
         let clicksPerSecond = 0; // Saniye başına tıklama sayısı
+        let lastClickTime = 0; // Son tıklama zamanı
+        const minClickInterval = 300; // İki tıklama arasındaki minimum süre (ms)
+        
         const clickButton = document.getElementById('clickButton');
         const clickCountDisplay = document.getElementById('clickCount');
         const timeLeftDisplay = document.getElementById('timeLeft');
@@ -166,6 +148,10 @@
         const clickSound = document.getElementById('clickSound');
 
         clickButton.addEventListener('click', (e) => {
+            const now = new Date().getTime();
+            if (now - lastClickTime < minClickInterval) return; // İki tıklama arasındaki süre kontrolü
+            lastClickTime = now;
+
             if (!timerStarted) {
                 startTimer();
                 timerStarted = true;
@@ -174,10 +160,7 @@
             clickCount++;
             clickCountDisplay.textContent = clickCount;
             calculateClicksPerSecond();
-            showRippleEffect(e);
-
-            // Ses çal
-            clickSound.play();
+            clickSound.play(); // Ses çal
         });
 
         function startTimer() {
@@ -201,7 +184,6 @@
             finalCount.textContent = clickCount;
             popupContainer.style.display = 'flex'; // Popup container'ı görünür yap
             mainContent.classList.add('blur-background');
-            clicksPerSecondDisplay.style.color = 'red'; // Saniye başına tıklama sayısının rengini değiştir
         }
 
         closePopupButton.addEventListener('click', () => {
@@ -211,4 +193,3 @@
     </script>
 </body>
 </html>
-

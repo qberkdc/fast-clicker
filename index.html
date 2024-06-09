@@ -96,8 +96,11 @@
         }
         .popup .popup-header {
             display: flex;
-            justify-content: space-between;
+            justify-content: flex-end;
             align-items: center;
+            position: absolute;
+            top: 10px;
+            right: 10px;
         }
         .popup .popup-header .close-button,
         .popup .popup-header .refresh-button {
@@ -105,6 +108,7 @@
             font-size: 18px;
             background: none;
             border: none;
+            margin-left: 10px;
         }
         .popup .popup-header .close-button::after {
             content: '×';
@@ -129,8 +133,8 @@
     <div class="popup-container" id="popupContainer">
         <div class="popup">
             <div class="popup-header">
-                <button class="close-button" id="closePopup"></button>
                 <button class="refresh-button" id="refreshPopup"></button>
+                <button class="close-button" id="closePopup"></button>
             </div>
             <h2>Time's up!</h2>
             <p>You clicked <span id="clicksPerSecond">0</span> times per second.</p>
@@ -151,7 +155,7 @@
         let timerStarted = false;
         let clicksPerSecond = 0; // Saniye başına tıklama sayısı
         let lastClickTime = 0; // Son tıklama zamanı
-        const minClickInterval = 60; // İki tıklama arasındaki minimum süre (ms)
+        const minClickInterval = 50; // İki tıklama arasındaki minimum süre (ms)
         
         const clickButton = document.getElementById('clickButton');
         const clickCountDisplay = document.getElementById('clickCount');

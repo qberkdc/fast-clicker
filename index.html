@@ -31,8 +31,8 @@
             margin-bottom: 20px;
         }
         #clickButton {
-            width: 180px; /* Genişletildi */
-            height: 180px; /* Genişletildi */
+            width: 250px; /* Büyük yapıldı */
+            height: 250px; /* Büyük yapıldı */
             background-color: black;
             color: lime;
             font-size: 24px;
@@ -44,20 +44,13 @@
             box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
             transition: transform 0.3s ease;
             outline: none;
+            background-image: url('https://icons.iconarchive.com/icons/icons8/ios7/256/User-Interface-Cursor-icon.png'); /* Mouse tıklama simgesi */
+            background-size: 50%; /* Simgenin boyutu */
+            background-repeat: no-repeat;
+            background-position: center;
         }
         #clickButton:active {
             transform: scale(0.95);
-        }
-        #clickButton span {
-            display: block;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            transition: transform 0.3s ease;
-        }
-        #clickButton:hover span {
-            transform: translate(-50%, -50%) scale(1.2);
         }
         .counter, .timer {
             font-size: 24px;
@@ -84,12 +77,13 @@
             color: black;
             padding: 20px;
             border-radius: 10px;
-            text-align: center;
+            text-align: left; /* Sola hizalandı */
             max-width: 80%;
             position: relative;
         }
         .popup h2 {
             margin-bottom: 10px;
+            text-align: center; /* Başlık ortalandı */
         }
         .popup p {
             margin-bottom: 20px;
@@ -111,14 +105,14 @@
         .popup .popup-header .refresh-button::after {
             content: '⟳';
             font-size: 36px; /* Büyütüldü */
-            color: green;
+            color: #00BFFF; /* Hafif açık mavi */
         }
     </style>
 </head>
 <body>
     <div class="main-content">
         <div class="button-container">
-            <button id="clickButton" style="outline: none;"><span>Click</span></button>
+            <button id="clickButton" style="outline: none;"></button>
         </div>
         <div class="counter">Clicks: <span id="clickCount">0</span></div>
         <div class="timer">Time left: <span id="timeLeft">10</span> seconds</div>
@@ -147,7 +141,7 @@
         let timerStarted = false;
         let clicksPerSecond = 0; // Saniye başına tıklama sayısı
         let lastClickTime = 0; // Son tıklama zamanı
-        const minClickInterval = 300; // İki tıklama arasındaki minimum süre (ms)
+        const minClickInterval = 50; // İki tıklama arasındaki minimum süre (ms)
         
         const clickButton = document.getElementById('clickButton');
         const clickCountDisplay = document.getElementById('clickCount');
